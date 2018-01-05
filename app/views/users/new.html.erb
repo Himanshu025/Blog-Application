@@ -1,0 +1,19 @@
+<h1>SIGNUP here</h1>
+<%= form_with url: 'create', local: true do |form| %>
+  
+  
+  <p>
+    <%= form.label :email %><br>
+    <%= form.text_field :email %>
+  </p>
+ 
+  <p>
+    <%= form.label :password %><br>
+    <%= form.text_area :password %>
+  </p>
+ 
+  <p>
+    <%= form.submit %>
+  </p>
+ 
+<% end %>
