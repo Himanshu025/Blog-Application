@@ -8,7 +8,7 @@
 	<%= @article.text %>
 </p>
 
-<h2><%= link_to 'Comments' ,  article_comments_path(@article, @article.comments) %></h2> 
+<h2><%= link_to 'Comments' ,  article_comments_path(@article) %></h2> 
 <%= render @article.comments %>
 
 

@@ -1,5 +1,5 @@
 class CommentsController < ApplicationController
-
+  skip_before_action :verify_authenticity_token
   http_basic_authenticate_with name: "HHH",password: "WWE",except: [:create]
 
   def index
@@ -7,13 +7,16 @@ class CommentsController < ApplicationController
     @article.comments=@article.comments
     respond_to do |format|
       format.json { render json: {status: 'SUCCESS',  comments: @article.comments},status: :ok }
-      format.html { redirect_to article_comments(@article.comments) }
+      format.html 
     end
   end
   def create
     @article = Article.find(params[:article_id])
     @comment = @article.comments.create(comment_params)
-    redirect_to article_path(@article)
+    respond_to do |format|
+      format.html { redirect_to article_path(@article) }
+      format.json { render json: {status: 'SUCCESS',message: 'Comment added successfully'  },status: :ok}
+    end  
   end
 
   def destroy
