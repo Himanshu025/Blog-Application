@@ -2,12 +2,10 @@
 	<strong>Commenter:</strong>
 	<%= comment.commenter %>
 </p>
-
 <p>
 	<strong>Comment:</strong>
 	<%= comment.body %>
 </p>
-
 <p>
 	<%= link_to 'Delete Comment', [comment.article, comment],
 	method: :delete,
