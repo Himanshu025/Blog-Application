@@ -9,6 +9,7 @@
   <%= form.text_area :body %>
 </p>
 <p>
+	<%= hidden_field_tag 'article', '@article.article_id'  %>
   <%= form.submit %>
 </p>
 <% end %>

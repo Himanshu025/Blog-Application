@@ -6,5 +6,6 @@ Rails.application.routes.draw do
   end
   post 'users/checklogin'
   post 'users/create'
+  post 'users/logout'
   root 'welcome#index'
 end
