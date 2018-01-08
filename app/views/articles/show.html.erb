@@ -1,14 +1,14 @@
 <p>
-  <b>Title:</b>
-  <%= @article.title %>
-</p>
- 
-<p>
-  <b>Text:</b>
-  <%= @article.text %>
+	<b>Title:</b>
+	<%= @article.title %>
 </p>
 
-<h2>Comments</h2>
+<p>
+	<b>Text:</b>
+	<%= @article.text %>
+</p>
+
+<h2><%= link_to 'Comments' ,  article_comments_path(@article, @article.comments) %></h2> 
 <%= render @article.comments %>
 
 
