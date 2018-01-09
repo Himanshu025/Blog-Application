@@ -8,7 +8,7 @@ class CommentsController < ApplicationController
       format.html 
     end
   end
-  
+
   def create
     @article = Article.find(params[:article_id])
     @comment = @article.comments.create(comment_params)
@@ -16,6 +16,39 @@ class CommentsController < ApplicationController
       format.html { redirect_to article_path(@article) }
       format.json { render json: {comment: @comment},status: :ok}
     end  
+  end
+
+  def show
+    @comment = Comment.find(params[:id])
+    respond_to do |format|
+      format.json { render json: {comment: @comment},status: :ok }
+      format.html
+    end
+  rescue ActiveRecord::RecordNotFound
+    respond_to do |format|
+      format.json { render json: {comment: "Not found" }, status: :unprocessable_entity }
+      format.html
+    end
+  end
+
+  def update
+    @comment = Comment.find(params[:id])
+    if @comment.update(comment_params)
+      respond_to do |format|
+        format.json { render json: {comment: @comment}, status: :ok }
+        format.html 
+      end  
+    else
+      respond_to do |format|
+        format.json { render json: {comment: @comment}, status: :unprocessable_entity }
+        format.html { render 'edit' }
+      end
+    end
+    rescue ActiveRecord::RecordNotFound
+    respond_to do |format|
+      format.json { render json: {comment: "Not found" }, status: :unprocessable_entity }
+      format.html
+    end
   end
 
   def destroy
@@ -26,9 +59,9 @@ class CommentsController < ApplicationController
       format.html { redirect_to article_path(@article)}
       format.json { render json:{article: @article},status: :ok}
     end
-    rescue ActiveRecord::RecordNotFound
+  rescue ActiveRecord::RecordNotFound
     respond_to do |format|
-      format.json { render json: { article: "Not found" }, status: :unprocessable_entity }
+      format.json { render json: {article: "Not found" }, status: :unprocessable_entity }
       format.html
     end
   end 
