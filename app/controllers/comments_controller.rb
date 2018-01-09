@@ -1,38 +1,40 @@
 class CommentsController < ApplicationController
-  skip_before_action :verify_authenticity_token, except: [:index]
+  skip_before_action :verify_authenticity_token, except: [:index ,:show]
   def index
-    @article = Article.find(params[:article_id])
-    @article.comments=@article.comments
+    @comments = Comment.all
     respond_to do |format|
-      format.json { render json: {comments: @article.comments},status: :ok }
-      format.html 
+      format.json { render json: { comments: @comments }, status: :ok }
+      format.html
     end
-  end
-
-  def create
-    @article = Article.find(params[:article_id])
-    @comment = @article.comments.create(comment_params)
-    respond_to do |format|
-      format.html { redirect_to article_path(@article) }
-      format.json { render json: {comment: @comment},status: :ok}
-    end  
   end
 
   def show
     @comment = Comment.find(params[:id])
     respond_to do |format|
-      format.json { render json: {comment: @comment},status: :ok }
+      format.json { render json: { comment: @comment }, status: :ok }
       format.html
     end
   rescue ActiveRecord::RecordNotFound
     respond_to do |format|
-      format.json { render json: {comment: "Not found" }, status: :unprocessable_entity }
+      format.json { render json: { message: "Not found" }, status: :not_found }
       format.html
     end
   end
 
-  def new
-    @comment=Comment.new
+  def create
+    @comment = Comment.create(comment_params)
+    @article = Article.find(@comment.article_id)
+    if @comment.save
+      respond_to do |format|
+        format.json { render json: { comment: @comment }, status: :ok }
+        format.html { redirect_to article_path(@article) }
+      end
+    else
+      respond_to do |format|
+        format.json { render json: { message: @comment.errors}, status: :unprocessable_entity }
+        format.html { redirect_to articles_path }
+      end
+    end
   end
 
   def edit
@@ -40,42 +42,41 @@ class CommentsController < ApplicationController
   end
 
   def update
-    @comment = Comment.find(params[:id])
-    if @comment.update(comment_params)
+    comment = Comment.find(params[:id])
+    if comment.update_attributes(params.require('comment').permit(:commenter, :body))
       respond_to do |format|
-        format.json { render json: {comment: @comment}, status: :ok }
-        format.html { redirect_to article_comments_path} 
-      end  
-    else
+        format.json { render json: { comment: comment}, status: :ok }
+        format.html { redirect_to comments_path }
+      end
+    else                    
       respond_to do |format|
-        format.json { render json: {comment: @comment}, status: :unprocessable_entity }
-        format.html { render 'edit' }
+        format.json { render json: { message: comment.errors}, status: :unprocessable_entity }
+        format.html { redirect_to comments_path }
       end
     end
-    rescue ActiveRecord::RecordNotFound
+  rescue ActiveRecord::RecordNotFound
     respond_to do |format|
-      format.json { render json: {comment: "Not found" }, status: :unprocessable_entity }
+      format.json { render json: { message: "Not FOUND" }, status: :not_found }
       format.html
     end
   end
 
   def destroy
-    @article = Article.find(params[:article_id])
-    @comment = @article.comments.find(params[:id])
+    @comment = Comment.find(params[:id])
     @comment.destroy
     respond_to do |format|
-      format.html { redirect_to article_path(@article)}
-      format.json { render json:{article: @article},status: :ok}
+      format.json { render json: {  message: "deleted"}, status: :ok }
+      format.html { redirect_to comments_path}
     end
   rescue ActiveRecord::RecordNotFound
     respond_to do |format|
-      format.json { render json: {article: "Not found" }, status: :unprocessable_entity }
-      format.html
+      format.json { render json: { comment: "Comment not found" }, status: :not_found }
+      format.html { redirect_to article_path(@article) }
     end
-  end 
+  end
 
-  private 
+  private
   def comment_params
-    params.require(:comment).permit(:commenter, :body)
+    params.require(:comment).permit(:commenter, :body, :article_id)
   end
 end
