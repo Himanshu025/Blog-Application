@@ -31,12 +31,20 @@ class CommentsController < ApplicationController
     end
   end
 
+  def new
+    @comment=Comment.new
+  end
+
+  def edit
+    @comment = Comment.find(params[:id])
+  end
+
   def update
     @comment = Comment.find(params[:id])
     if @comment.update(comment_params)
       respond_to do |format|
         format.json { render json: {comment: @comment}, status: :ok }
-        format.html 
+        format.html { redirect_to article_comments_path} 
       end  
     else
       respond_to do |format|
