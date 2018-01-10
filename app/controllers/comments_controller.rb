@@ -22,17 +22,24 @@ class CommentsController < ApplicationController
   end
 
   def create
-    @comment = Comment.create(comment_params)
-    @article = Article.find(@comment.article_id)
-    if @comment.save
-      respond_to do |format|
-        format.json { render json: { comment: @comment }, status: :ok }
-        format.html { redirect_to article_path(@article) }
+    begin
+      @comment = Comment.create(comment_params)
+      @article = Article.find(@comment.article_id)
+      if @comment.save
+        respond_to do |format|
+          format.json { render json: { comment: @comment }, status: :ok }
+          format.html { redirect_to article_path(@article) }
+        end
+      else
+        respond_to do |format|
+          format.json { render json: { message: @comment.errors}, status: :unprocessable_entity }
+          format.html { redirect_to articles_path }
+        end
       end
-    else
+    rescue ActiveRecord::RecordNotFound
       respond_to do |format|
-        format.json { render json: { message: @comment.errors}, status: :unprocessable_entity }
-        format.html { redirect_to articles_path }
+        format.json { render json: { message: "Not FOUND" }, status: :not_found }
+        format.html
       end
     end
   end

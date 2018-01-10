@@ -11,7 +11,7 @@ class ArticlesController < ApplicationController
   def show
     @article = Article.find(params[:id])
     respond_to do |format|
-      format.json { render json: { articles: @article, comments:@article.comments }, status: :ok }
+      format.json { render json: { article: @article, comments:@article.comments }, status: :ok }
       format.html 
     end
     rescue ActiveRecord::RecordNotFound
@@ -29,7 +29,7 @@ class ArticlesController < ApplicationController
     article = Article.create(params.require(:article).permit(:title, :text))
     if article.save
       respond_to do |format|
-        format.json { render json: { articles: article }, status: :ok }
+        format.json { render json: { article: article }, status: :ok }
         format.html { redirect_to article}
       end
     else
@@ -62,7 +62,7 @@ class ArticlesController < ApplicationController
     article = Article.find(params[:id])
     if article.update_attributes(params.require(:article).permit(:title, :text))
       respond_to do |format|
-        format.json { render json: { articles: article}, status: :ok }
+        format.json { render json: { article: article}, status: :ok }
         format.html { redirect_to article_path }
       end 
     else                    
